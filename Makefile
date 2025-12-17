@@ -2,8 +2,10 @@ export BIN := $(abspath bin)
 export SRC := $(abspath src)
 export ASM := nasm
 export ASMFLAG = -f bin
+export CC = gcc
+export CCFLAGS = -g
 
-makefiles := $(SRC)/bootloader $(SRC)/kernel
+makefiles := $(SRC)/bootloader $(SRC)/kernel tools
 
 .PHONY: all scaffold make_all
 
@@ -19,8 +21,8 @@ $(BIN)/main_floppy.img: make_all
 	@dd if=/dev/zero of=$(BIN)/main_floppy.img bs=512 count=2880
 	@mkfs.fat -F 12 -n "TVOS" $(BIN)/main_floppy.img
 	@dd if=$(BIN)/bootloader.bin of=$(BIN)/main_floppy.img conv=notrunc
-	@cp $(BIN)/main.bin $(BIN)/main_floppy.img
-	@truncate -s 1440k $(BIN)/main_floppy.img
+	@mcopy -i $(BIN)/main_floppy.img $(BIN)/kernel.bin "::kernel.bin"
+	@mcopy -i $(BIN)/main_floppy.img test.txt "::test.txt"
 
 # Make all makefiles
 make_all:

@@ -7,6 +7,7 @@ header:
 
 done:
 	echo "Built bootloader..."
+	@echo $0
 
 $(BIN)/bootloader.bin: main.asm
 	echo "Compiling main.asm..."
