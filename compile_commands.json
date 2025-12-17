@@ -1,0 +1,8 @@
+[
+  {
+    "directory": "/home/vanea/Projects/OS",
+    "command": "g++ -std=c++20 -Wall -Wextra -D_cdecl=",
+    "file": "src/main.cpp"
+  }
+]
+

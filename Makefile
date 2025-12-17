@@ -1,11 +1,19 @@
+# GLOBAL
 export BIN := $(abspath bin)
 export SRC := $(abspath src)
+export WATCOM_BIN = /usr/bin/watcom/binl64
+
+# ASSEMBLING
 export ASM := nasm
 export ASMFLAG = -f bin
+
+# COMPILING
 export CC = gcc
 export CCFLAGS = -g
+export CC16 = $(WATCOM_BIN)/wcc
+export LD16 = $(WATCOM_BIN)/wlink
 
-makefiles := $(SRC)/bootloader $(SRC)/kernel tools
+makefiles := $(SRC)/bootloader/stage1 $(SRC)/bootloader/stage2 $(SRC)/kernel tools
 
 .PHONY: all scaffold make_all
 
@@ -20,8 +28,8 @@ $(BIN)/main_floppy.img: make_all
 	@echo "Building image..."
 	@dd if=/dev/zero of=$(BIN)/main_floppy.img bs=512 count=2880
 	@mkfs.fat -F 12 -n "TVOS" $(BIN)/main_floppy.img
-	@dd if=$(BIN)/bootloader.bin of=$(BIN)/main_floppy.img conv=notrunc
-	@mcopy -i $(BIN)/main_floppy.img $(BIN)/kernel.bin "::kernel.bin"
+	@dd if=$(BIN)/stage1.bin of=$(BIN)/main_floppy.img conv=notrunc
+	@mcopy -i $(BIN)/main_floppy.img $(BIN)/stage2.bin "::stage2.bin"
 	@mcopy -i $(BIN)/main_floppy.img test.txt "::test.txt"
 
 # Make all makefiles
