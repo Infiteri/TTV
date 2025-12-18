@@ -2,7 +2,7 @@
   {
     "directory": "/home/vanea/Projects/OS",
     "command": "gcc -std=gnull -Wall -Wextra -nostdlib -D_cdecl= -Dfar=",
-    "file": "src/main.cpp"
+    "file": "src/main.c"
   }
 ]
 
