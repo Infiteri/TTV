@@ -1,9 +1,6 @@
 #pragma once
-
 #include "disk.h"
 #include "stdint.h"
-
-#pragma pack(push, 1)
 
 typedef struct
 {
@@ -19,9 +16,7 @@ typedef struct
     uint16_t ModifiedDate;
     uint16_t FirstClusterLow;
     uint32_t Size;
-} FatDirectoryEntry;
-
-#pragma pack(pop)
+} __attribute__((packed)) FAT_DirectoryEntry;
 
 typedef struct
 {
@@ -29,9 +24,9 @@ typedef struct
     bool IsDirectory;
     uint32_t Position;
     uint32_t Size;
-} FatFile;
+} FAT_File;
 
-enum FatAttributes
+enum FAT_Attributes
 {
     FAT_ATTRIBUTE_READ_ONLY = 0x01,
     FAT_ATTRIBUTE_HIDDEN = 0x02,
@@ -40,11 +35,11 @@ enum FatAttributes
     FAT_ATTRIBUTE_DIRECTORY = 0x10,
     FAT_ATTRIBUTE_ARCHIVE = 0x20,
     FAT_ATTRIBUTE_LFN = FAT_ATTRIBUTE_READ_ONLY | FAT_ATTRIBUTE_HIDDEN | FAT_ATTRIBUTE_SYSTEM |
-                        FAT_ATTRIBUTE_VOLUME_ID,
+                        FAT_ATTRIBUTE_VOLUME_ID
 };
 
-bool FatInitialize(Disk *disk);
-FatFile far *FatOpen(Disk *disk, const char *path);
-uint32_t FatRead(Disk *disk, FatFile far *file, uint32_t byteCount, void *out);
-bool FatReadEntry(Disk *disk, FatFile far *file, FatDirectoryEntry *dir);
-void FatClose(FatFile far *file);
+bool FAT_Initialize(DISK *disk);
+FAT_File *FAT_Open(DISK *disk, const char *path);
+uint32_t FAT_Read(DISK *disk, FAT_File *file, uint32_t byteCount, void *dataOut);
+bool FAT_ReadEntry(DISK *disk, FAT_File *file, FAT_DirectoryEntry *dirEntry);
+void FAT_Close(FAT_File *file);

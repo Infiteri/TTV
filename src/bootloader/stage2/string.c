@@ -1,14 +1,15 @@
 #include "string.h"
-#include "stdint.h"
+#include <stdint.h>
+#include <stddef.h>
 
-const char *StrChr(const char *str, char c)
+const char* strchr(const char* str, char chr)
 {
     if (str == NULL)
         return NULL;
 
     while (*str)
     {
-        if (*str == c)
+        if (*str == chr)
             return str;
 
         ++str;
@@ -17,9 +18,10 @@ const char *StrChr(const char *str, char c)
     return NULL;
 }
 
-char *StrCpy(char *dst, const char *src)
+char* strcpy(char* dst, const char* src)
 {
-    char *orig = dst;
+    char* origDst = dst;
+
     if (dst == NULL)
         return NULL;
 
@@ -35,18 +37,18 @@ char *StrCpy(char *dst, const char *src)
         ++src;
         ++dst;
     }
-
+    
     *dst = '\0';
-    return orig;
+    return origDst;
 }
 
-unsigned StrLen(const char *src)
+unsigned strlen(const char* str)
 {
     unsigned len = 0;
-    while (*src)
+    while (*str)
     {
-        len++;
-        src++;
+        ++len;
+        ++str;
     }
 
     return len;

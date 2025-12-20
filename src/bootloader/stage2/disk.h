@@ -1,14 +1,14 @@
 #pragma once
 
-#include "stdint.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
-  uint8_t Id;
-  uint32_t Cylinders;
-  uint32_t Heads;
-  uint32_t Sectors;
-} Disk;
+    uint8_t id;
+    uint16_t cylinders;
+    uint16_t sectors;
+    uint16_t heads;
+} DISK;
 
-bool DiskInitialize(Disk *disk, uint8_t driveNumber);
-bool DiskReadSectors(Disk *disk, uint32_t lba, uint8_t sectors,
-                     void far *dataOut);
+bool DISK_Initialize(DISK* disk, uint8_t driveNumber);
+bool DISK_ReadSectors(DISK* disk, uint32_t lba, uint8_t sectors, void* lowerDataOut);

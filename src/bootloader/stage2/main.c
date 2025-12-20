@@ -1,53 +1,47 @@
 #include "disk.h"
 #include "fat.h"
-#include "stdint.h"
+#include "memdefs.h"
+#include "memory.h"
 #include "stdio.h"
+#include "x86.h"
+#include <stdint.h>
 
-void far *g_data = (void far *)0x00500200;
+uint8_t *KernelLoadBuffer = (uint8_t *)MEMORY_LOAD_KERNEL;
+uint8_t *Kernel = (uint8_t *)MEMORY_KERNEL_ADDR;
 
-void _cdecl cstart_(uint16_t bootDrive)
+typedef void (*KernelStart)();
+
+void __attribute__((cdecl)) start(uint16_t bootDrive)
 {
-    Disk disk;
-    if (!DiskInitialize(&disk, bootDrive))
+    clrscr();
+
+    DISK disk;
+    if (!DISK_Initialize(&disk, bootDrive))
     {
         printf("Disk init error\r\n");
         goto end;
     }
 
-    DiskReadSectors(&disk, 19, 1, g_data);
-
-    if (!FatInitialize(&disk))
+    if (!FAT_Initialize(&disk))
     {
         printf("FAT init error\r\n");
         goto end;
     }
 
-    // browse files in root
-    FatFile far *fd = FatOpen(&disk, "/");
-    FatDirectoryEntry entry;
-    int i = 0;
-    while (FatReadEntry(&disk, fd, &entry) && i++ < 5)
-    {
-        printf("  ");
-        for (int i = 0; i < 11; i++)
-            putc(entry.Name[i]);
-        printf("\r\n");
-    }
-    FatClose(fd);
-
-    char buffer[100];
+    // load kernel
+    FAT_File *fd = FAT_Open(&disk, "/kernel.bin");
     uint32_t read;
-    fd = FatOpen(&disk, "test.txt");
-    while ((read = FatRead(&disk, fd, sizeof(buffer), buffer)))
+    uint8_t *kernelBuffer = Kernel;
+    while ((read = FAT_Read(&disk, fd, MEMORY_LOAD_SIZE, KernelLoadBuffer)))
     {
-        for (uint32_t i = 0; i < read; i++)
-        {
-            if (buffer[i] == '\n')
-                putc('\r');
-            putc(buffer[i]);
-        }
+        memcpy(kernelBuffer, KernelLoadBuffer, read);
+        kernelBuffer += read;
     }
-    FatClose(fd);
+    FAT_Close(fd);
+
+    // execute kernel
+    KernelStart kernelStart = (KernelStart)Kernel;
+    kernelStart();
 
 end:
     for (;;)
