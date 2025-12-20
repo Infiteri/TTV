@@ -1,19 +1,55 @@
 #include "disk.h"
+#include "fat.h"
+#include "stdint.h"
 #include "stdio.h"
 
-void _cdecl cstart_(unsigned short bootDrive)
+void far *g_data = (void far *)0x00500200;
+
+void _cdecl cstart_(uint16_t bootDrive)
 {
     Disk disk;
     if (!DiskInitialize(&disk, bootDrive))
     {
-        printf("Couldn't initialize disk\n");
-        printf("Drive number: %hd", bootDrive);
-        return;
+        printf("Disk init error\r\n");
+        goto end;
     }
-    else
-        printf("Disk initialized\n");
 
-    printf("Test %% %s %c %d %lx %llu %hd %hhd\n", "abc", 'z', 1, 2ul, 3ull, bootDrive, (char)5);
+    DiskReadSectors(&disk, 19, 1, g_data);
+
+    if (!FatInitialize(&disk))
+    {
+        printf("FAT init error\r\n");
+        goto end;
+    }
+
+    // browse files in root
+    FatFile far *fd = FatOpen(&disk, "/");
+    FatDirectoryEntry entry;
+    int i = 0;
+    while (FatReadEntry(&disk, fd, &entry) && i++ < 5)
+    {
+        printf("  ");
+        for (int i = 0; i < 11; i++)
+            putc(entry.Name[i]);
+        printf("\r\n");
+    }
+    FatClose(fd);
+
+    char buffer[100];
+    uint32_t read;
+    fd = FatOpen(&disk, "test.txt");
+    while ((read = FatRead(&disk, fd, sizeof(buffer), buffer)))
+    {
+        for (uint32_t i = 0; i < read; i++)
+        {
+            if (buffer[i] == '\n')
+                putc('\r');
+            putc(buffer[i]);
+        }
+    }
+    FatClose(fd);
+
+end:
     for (;;)
         ;
 }

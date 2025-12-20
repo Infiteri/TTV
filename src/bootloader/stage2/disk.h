@@ -2,13 +2,13 @@
 
 #include "stdint.h"
 
-typedef struct
-{
-    u8 Id;
-    u16 Cylinders;
-    u16 Sectors;
-    u16 Heads;
+typedef struct {
+  uint8_t Id;
+  uint32_t Cylinders;
+  uint32_t Heads;
+  uint32_t Sectors;
 } Disk;
 
-bool DiskInitialize(Disk *disk, u8 driveNumber);
-bool DiskReadSectors(Disk *disk, u32 lba, u32 sectors, u8 far *out);
+bool DiskInitialize(Disk *disk, uint8_t driveNumber);
+bool DiskReadSectors(Disk *disk, uint32_t lba, uint8_t sectors,
+                     void far *dataOut);

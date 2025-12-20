@@ -1,12 +1,16 @@
 #pragma once
-
 #include "stdint.h"
 
-void _cdecl x86_div64_32(u64 dividend, u32 divisor, u64 *quotientOut, u32 *remainderOut);
-void _cdecl x86_WriteCharTeletype(char c, u8 page);
+void _cdecl x86_div64_32(uint64_t dividend, uint32_t divisor,
+                         uint64_t *quotientOut, uint32_t *remainderOut);
 
-// Disk functions
+void _cdecl x86_Video_WriteCharTeletype(char c, uint8_t page);
 
-bool _cdecl x86_Disk_Reset(u8 drive);
-bool _cdecl x86_Disk_Read(u8 drive, u16 cylinder, u16 head, u16 sectors, u8 count, u8 far *out);
-bool _cdecl x86_Disk_GetDriveParams(u8 drive, u8 *driveOut, u16 *c, u16 *s, u16 *h);
+bool _cdecl x86_Disk_Reset(uint8_t drive);
+
+bool _cdecl x86_Disk_Read(uint8_t drive, uint16_t cylinder, uint16_t sectors,
+                          uint16_t heads, uint8_t count, void far *dataOut);
+
+bool _cdecl x86_Disk_GetDriveParams(uint8_t drive, uint8_t *dataTypeOut,
+                                    uint16_t *cylinderOut, uint16_t *sectorsOut,
+                                    uint16_t *headsOut);

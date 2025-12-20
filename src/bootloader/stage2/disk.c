@@ -2,20 +2,40 @@
 #include "stdint.h"
 #include "x86.h"
 
-bool DiskInitialize(Disk *disk, u8 driveNumber)
+bool DiskInitialize(Disk *disk, uint8_t driveNumber)
 {
-    u8 driveType;
-    u16 cyl, hd, sc;
+    uint8_t driveType;
+    uint16_t cylinders, sectors, heads;
 
-    disk->Id = driveNumber;
-
-    if (!x86_Disk_GetDriveParams(driveNumber, &driveType, &cyl, &sc, &hd))
+    if (!x86_Disk_GetDriveParams(driveNumber, &driveType, &cylinders, &sectors, &heads))
         return false;
 
-    disk->Heads = hd;
-    disk->Cylinders = cyl;
-    disk->Sectors = sc;
+    disk->Id = driveNumber;
+    disk->Cylinders = cylinders + 1;
+    disk->Sectors = sectors;
+    disk->Heads = heads + 1;
+
     return true;
 }
 
-bool DiskReadSectors(Disk *disk, u32 lba, u32 sectors, u8 far *out) {}
+void LBA2CHS(Disk *disk, uint32_t lba, uint16_t *cOut, uint16_t *sOut, uint16_t *hOut)
+{
+    *sOut = lba % disk->Sectors + 1;
+    *cOut = (lba / disk->Sectors) / disk->Heads;
+    *hOut = (lba / disk->Sectors) % disk->Heads;
+}
+
+bool DiskReadSectors(Disk *disk, uint32_t lba, uint8_t sectors, void far *dataOut)
+{
+    uint16_t cylinder, sector, head;
+    LBA2CHS(disk, lba, &cylinder, &sector, &head);
+
+    for (int i = 0; i < 3; i++)
+    {
+        if (x86_Disk_Read(disk->Id, cylinder, sector, head, sectors, dataOut))
+            return true;
+
+        x86_Disk_Reset(disk->Id);
+    }
+    return false;
+}

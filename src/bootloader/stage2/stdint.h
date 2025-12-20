@@ -1,18 +1,19 @@
 #pragma once
 
-typedef unsigned char u8;
-typedef signed char i8;
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef signed short int16_t;
+typedef unsigned short uint16_t;
+typedef signed long int int32_t;
+typedef unsigned long int uint32_t;
+typedef signed long long int int64_t;
+typedef unsigned long long int uint64_t;
 
-typedef unsigned short u16;
-typedef signed short i16;
+typedef uint8_t bool;
 
-typedef unsigned long int u32;
-typedef signed long int i32;
-
-typedef unsigned long long int u64;
-typedef signed long long int i64;
-
-typedef u8 bool;
-
-#define true 1
 #define false 0
+#define true 1
+
+#define NULL ((void *)0)
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
