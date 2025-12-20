@@ -58,9 +58,7 @@ $(BIN)/kernel/c/%.obj: %.c $(HEADERS_C) always
 $(BIN)/kernel/asm/%.obj: %.asm $(HEADERS_ASM) always
 	@echo "Compiling     $<"
 	@$(TARGET_ASM) $(TARGET_ASMFLAGS) -o $@ $<
-
 always:
-	@mkdir -p $(BIN)/kernel/c
-	@mkdir -p $(BIN)/kernel/asm
-
-
+	@for dir in $(sort $(dir $(OBJECTS_C) $(OBJECTS_ASM))); do \
+		mkdir -p $$dir; \
+	done
