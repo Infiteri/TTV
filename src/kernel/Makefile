@@ -15,7 +15,8 @@ SOURCES_C := \
 	$(wildcard *.c) \
 	$(wildcard */*.c) \
 	$(wildcard */*/*.c) \
-	$(wildcard */*/*/*.c)
+	$(wildcard */*/*/*.c) \
+	arch/i686/isr_gen.c
 
 OBJECTS_C := $(patsubst %.c,$(BIN)/kernel/c/%.obj,$(SOURCES_C))
 
@@ -23,7 +24,9 @@ HEADERS_ASM := \
 	$(wildcard *.inc) \
 	$(wildcard */*.inc) \
 	$(wildcard */*/*.inc) \
-	$(wildcard */*/*/*.inc)
+	$(wildcard */*/*/*.inc) \
+	arch/i686/isr_gen.inc
+
 
 SOURCES_ASM := \
 	$(wildcard *.asm) \
@@ -58,6 +61,10 @@ $(BIN)/kernel/c/%.obj: %.c $(HEADERS_C) always
 $(BIN)/kernel/asm/%.obj: %.asm $(HEADERS_ASM) always
 	@echo "Compiling     $<"
 	@$(TARGET_ASM) $(TARGET_ASMFLAGS) -o $@ $<
+
+arch/i686/isr_gen.c arch/i686/isr_gen.inc:
+	$(ROOT)/build/GenerateIsrs.sh $(ROOT)/src/kernel/arch/i686/isr_gen.c $(ROOT)/src/kernel/arch/i686/isr_gen.inc
+
 always:
 	@for dir in $(sort $(dir $(OBJECTS_C) $(OBJECTS_ASM))); do \
 		mkdir -p $$dir; \
