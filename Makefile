@@ -28,5 +28,5 @@ make_all:
 
 # Launch
 launch:
-	@qemu-system-i386 -fda $(BIN)/main_floppy.img
+	@qemu-system-i386 -debugcon stdio -fda $(BIN)/main_floppy.img
 
