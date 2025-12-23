@@ -4,7 +4,7 @@ export SRC := $(abspath src)
 export WATCOM_BIN = /usr/bin/watcom/binl64
 export ROOT = $(abspath .)
 
-export CFLAGS = -std=c99 -g
+export CFLAGS = -std=c99 -g -Isrc
 export ASMFLAGS =
 export CC = gcc
 export CXX = g++

@@ -24,7 +24,7 @@ $(BIN)/main_floppy.img: make_all
 # Make all makefiles
 make_all:
 	@$(foreach word,$(makefiles), \
-		$(MAKE) -s -j12 -C $(word) --no-print-directory;)
+		$(MAKE) all -s -j8 -C $(word) --no-print-directory;)
 
 # Launch
 launch:

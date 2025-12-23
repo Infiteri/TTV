@@ -1,5 +1,7 @@
+#include "bootloader/stage2/memdetect.h"
 #include "disk.h"
 #include "fat.h"
+#include "lib/boot/boot.h"
 #include "memdefs.h"
 #include "memory.h"
 #include "stdio.h"
@@ -8,8 +10,9 @@
 
 uint8_t *KernelLoadBuffer = (uint8_t *)MEMORY_LOAD_KERNEL;
 uint8_t *Kernel = (uint8_t *)MEMORY_KERNEL_ADDR;
+BootParams BootPrms;
 
-typedef void (*KernelStart)();
+typedef void (*KernelStart)(BootParams *params);
 
 void __attribute__((cdecl)) start(uint16_t bootDrive)
 {
@@ -28,6 +31,10 @@ void __attribute__((cdecl)) start(uint16_t bootDrive)
         goto end;
     }
 
+    // detect memory
+    BootPrms.BootDevice = bootDrive;
+    MemoryDetect(&BootPrms.Memory);
+
     // load kernel
     FAT_File *fd = FAT_Open(&disk, "/kernel.bin");
     uint32_t read;
@@ -41,7 +48,7 @@ void __attribute__((cdecl)) start(uint16_t bootDrive)
 
     // execute kernel
     KernelStart kernelStart = (KernelStart)Kernel;
-    kernelStart();
+    kernelStart(&BootPrms);
 
 end:
     for (;;)

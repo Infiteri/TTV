@@ -1,7 +1,7 @@
 [
   {
     "directory": "/home/vanea/Projects/OS",
-    "command": "gcc -std=gnull -Wall -Wextra -nostdlib -Isrc/kernel -D_cdecl= -Dfar=",
+    "command": "gcc -std=gnull -Wall -Wextra -nostdlib -Isrc -Isrc/kernel -D_cdecl= -Dfar=",
     "file": "src/main.c"
   }
 ]
